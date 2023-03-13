@@ -104,6 +104,27 @@ services:
       - ${ROOT}/complete/movies:/movies # movies folder
       - ${ROOT}/downloads:/downloads # download folder
 
+  readarr:
+    container_name: readarr
+    image: ghcr.io/linuxserver/readarr:nightly
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - /path/to/data:/config
+      - /path/to/books:/books #optional
+      - /path/to/downloadclient-downloads:/downloads #optional
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${ROOT}/config/readarr:/config # config files
+      - ${ROOT}/complete/books:/books # books folder
+      - ${ROOT}/downloads:/downloads # download folder
+    ports:
+      - 8787:8787
+
   plex-server:
     container_name: plex-server
     image: plexinc/pms-docker:latest
