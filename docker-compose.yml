@@ -1,35 +1,54 @@
 version: "3.4"
 services:
-  vpn:
-    container_name: vpn
-    image: bubuntux/nordvpn
-    network_mode: bridge        # Required
-    cap_add:
-      - NET_ADMIN               # Required
-      - SYS_MODULE              # Required for TECHNOLOGY=NordLynx
-    sysctls:
-      - net.ipv4.conf.all.rp_filter=2
-    devices:
-      - /dev/net/tun            # Required
-    environment:                # Review https://github.com/bubuntux/nordvpn#environment-variables
-      - USER=${NORDVPN_USER}     # Required
-      - PASS=${NORDVPN_PASS}         # Required
-      - CONNECT=P2P
-      - TECHNOLOGY=NordLynx
-      - NETWORK=192.168.1.0/24
-    ulimits:                    # Recommended for High bandwidth scenarios
-      memlock:
-        soft: -1
-        hard: -1
-    ports:
-      - 8112:8112 # port for deluge web UI to be reachable from local network
+  #vpn:
+    #container_name: vpn
+    #image: bubuntux/nordvpn
+    #network_mode: bridge        # Required
+    #cap_add:
+      #- NET_ADMIN               # Required
+      #- SYS_MODULE              # Required for TECHNOLOGY=NordLynx
+    #sysctls:
+      #- net.ipv4.conf.all.rp_filter=2
+    #devices:
+      #- /dev/net/tun            # Required
+    #environment:                # Review https://github.com/bubuntux/nordvpn#environment-variables
+      #- USER=${NORDVPN_USER}     # Required
+      #- PASS=${NORDVPN_PASS}         # Required
+      #- CONNECT=P2P
+      #- TECHNOLOGY=NordLynx
+      #- NETWORK=192.168.4.0/24
+    #ulimits:                    # Recommended for High bandwidth scenarios
+      #memlock:
+        #soft: -1
+        #hard: -1
+    #ports:
+      #- 8112:8112 # port for deluge web UI to be reachable from local network
+    #restart: unless-stopped
+
+  expressvpn:
+    image: misioslav/expressvpn:latest
+    container_name: expressvpn
     restart: unless-stopped
+    ports: # ports from which container that uses expressvpn connection will be available in local network
+      - 8112:8112 # port for deluge web UI to be reachable from local network
+    environment:
+      - WHITELIST_DNS=192.168.4.1,1.1.1.1,8.8.8.8  # Comma seperated list of dns servers you wish to use and whitelist via iptables
+      - CODE=${EXPRESSVPN_CODE} # Activation Code from ExpressVPN https://www.expressvpn.com/support/troubleshooting/find-activation-code/
+      - SERVER=smart # By default container will connect to smart location, list of available locations you can find below
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    privileged: true
 
   deluge:
     container_name: deluge
     image: ghcr.io/linuxserver/deluge:latest
     restart: unless-stopped
-    network_mode: service:vpn # run on the vpn network
+    network_mode: service:expressvpn # run on the vpn network
     #network_mode: host
     environment:
       - PUID=${PUID} # default user id, defined in .env
@@ -38,9 +57,8 @@ services:
     volumes:
       - ${ROOT}/downloads:/downloads # downloads folder
       - ${ROOT}/config/deluge:/config # config files
-
     depends_on:
-      - vpn
+      - expressvpn
 
   jackett:
     container_name: jackett
