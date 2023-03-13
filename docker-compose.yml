@@ -180,3 +180,15 @@ services:
       - TZ=${TZ} # timezone, defined in .env
     ports:
       - 8181:8181
+
+  plextraktsync:
+    image: ghcr.io/taxel/plextraktsync
+    command: sync
+    container_name: plextraktsync
+    restart: on-failure:2
+    volumes:
+      - ${ROOT}/config/plextraktsync:/app/config
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
