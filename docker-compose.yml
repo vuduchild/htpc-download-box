@@ -126,10 +126,6 @@ services:
       - PGID=${PGID} # default group id, defined in .env
       - TZ=${TZ} # timezone, defined in .env
     volumes:
-      - /path/to/data:/config
-      - /path/to/books:/books #optional
-      - /path/to/downloadclient-downloads:/downloads #optional
-    volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${ROOT}/config/readarr:/config # config files
       - ${STORAGE}/complete/books:/books # books folder
