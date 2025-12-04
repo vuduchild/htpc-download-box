@@ -206,37 +206,37 @@ services:
       - net.ipv4.conf.all.rp_filter=2        # maybe; set reverse path filter to loose mode
       - net.ipv6.conf.all.disable_ipv6=1     # disable ipv6; recommended if using ipv4 only
 
-  tv-downloader-masterchef:
-    image: ghcr.io/vuduchild/tv-downloader:latest
-    container_name: tv-downloader-masterchef
-    restart: unless-stopped
-    network_mode: service:vpn-israel # run on the vpn network
-    environment:
-      - PUID=${PUID} # default user id, defined in .env
-      - PGID=${PGID} # default group id, defined in .env
-      - TZ=${TZ} # timezone, defined in .env
-      - SHOW=masterchef
-      # Season to download: 'latest' or specific number (e.g., '12')
-      - SEASON_NUMBER=latest
-      # Output directory inside container
-      - OUTPUT_DIR=/downloads
-      # Download options
-      - WORKERS=8
-      - PARALLEL_EPISODES=3
-      - RATE_LIMIT=0.0
-      - USE_FFMPEG=true
-      - FORCE_DOWNLOAD=false
+  #tv-downloader-masterchef:
+    #image: ghcr.io/vuduchild/tv-downloader:latest
+    #container_name: tv-downloader-masterchef
+    #restart: unless-stopped
+    #network_mode: service:vpn-israel # run on the vpn network
+    #environment:
+      #- PUID=${PUID} # default user id, defined in .env
+      #- PGID=${PGID} # default group id, defined in .env
+      #- TZ=${TZ} # timezone, defined in .env
+      #- SHOW=masterchef
+      ## Season to download: 'latest' or specific number (e.g., '12')
+      #- SEASON_NUMBER=latest
+      ## Output directory inside container
+      #- OUTPUT_DIR=/downloads
+      ## Download options
+      #- WORKERS=8
+      #- PARALLEL_EPISODES=3
+      #- RATE_LIMIT=0.0
+      #- USE_FFMPEG=true
+      #- FORCE_DOWNLOAD=false
 
-      # Schedule interval in seconds (7200 = 2 hours)
-      # Set to '0' or 'once' to run once and exit
-      - SCHEDULE_INTERVAL=7200
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      # Map downloads directory to host
-      # Change './downloads' to your preferred host path
-      - "${STORAGE}/complete/tv/MasterChef IL/Season 12/:/downloads"
-    depends_on:
-      - vpn-israel
+      ## Schedule interval in seconds (7200 = 2 hours)
+      ## Set to '0' or 'once' to run once and exit
+      #- SCHEDULE_INTERVAL=7200
+    #volumes:
+      #- /etc/localtime:/etc/localtime:ro
+      ## Map downloads directory to host
+      ## Change './downloads' to your preferred host path
+      #- "${STORAGE}/complete/tv/MasterChef IL/Season 12/:/downloads"
+    #depends_on:
+      #- vpn-israel
 
   tv-downloader-gameofchefs:
     image: ghcr.io/vuduchild/tv-downloader:latest
